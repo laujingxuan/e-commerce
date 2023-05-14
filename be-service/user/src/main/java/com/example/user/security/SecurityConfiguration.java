@@ -3,24 +3,20 @@ package com.example.user.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    public SecurityConfiguration(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -29,31 +25,37 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    // Basically to set up the AuthenticationManager that will be used during the login.
-    // Within this method, you configure the authentication manager by specifying the authentication provider or user details service.
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // In Spring Security, a PasswordEncoder is responsible for encoding and comparing passwords. It helps ensure that passwords are securely stored and validated by applying cryptographic hashing algorithms.
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/logout").permitAll()
+                                .anyRequest().authenticated()
+//                )
+//                .formLogin(form -> form
+//                        .loginPage("/login")
+//                        .defaultSuccessUrl("/dashboard")
+//                        .permitAll()
+                );
+        http.csrf().disable();
+
+        return http.build();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .anyRequest().authenticated()
-                .and()
-//                .formLogin()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/home")
-//                .permitAll()
-//                .and()
-//                .logout()
-//                .logoutUrl("/logout")
-//                .logoutSuccessUrl("/login?logout")
-//                .permitAll()
-//                .and()
-                .csrf().disable();
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        return authentication -> {
+            String username = authentication.getPrincipal().toString();
+            String password = authentication.getCredentials().toString();
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (passwordEncoder.matches(password, userDetails.getPassword())) {
+                return new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+            } else {
+                throw new BadCredentialsException("Invalid username or password");
+            }
+        };
     }
 }

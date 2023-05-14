@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,15 +28,9 @@ public class LoginController {
 
     private JwtTokenService jwtTokenService;
 
-//    @Autowired
-//    public LoginController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtTokenService jwtTokenService){
-//        this.authenticationManager = authenticationManager;
-//        this.userDetailsService = userDetailsService;
-//        this.jwtTokenService = jwtTokenService;
-//    }
-
     @Autowired
-    public LoginController(UserDetailsService userDetailsService, JwtTokenService jwtTokenService) {
+    public LoginController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtTokenService jwtTokenService){
+        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenService = jwtTokenService;
     }
@@ -58,8 +53,7 @@ public class LoginController {
             // The SecurityContextHolder is designed to propagate the security context across different layers of your application. When a request is received, the security context is typically set at the beginning of the request processing, and it is accessible throughout the request handling chain. This allows you to access the authentication information and perform authorization checks at any point during the request processing
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            String token = jwtTokenService.generateToken(user);
+            String token = jwtTokenService.generateToken((String) authentication.getPrincipal());
 
             return ResponseEntity.ok().body(new AuthenticationResponse(token));
         } catch (AuthenticationException e){
@@ -68,5 +62,10 @@ public class LoginController {
             // If you want to include a response body, you can use .body(...) to set the response body and return the ResponseEntity directly without calling .build()
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping("/get_test")
+    public String testAPI(){
+        return "test";
     }
 }

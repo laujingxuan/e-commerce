@@ -20,16 +20,16 @@ import java.util.function.Function;
 public class JwtTokenService {
 
     // The @Value("${jwt.secret}") annotation is used to inject a value from a property file into a variable in Spring.
-//    @Value("${jwt.secret}")
-    private String secret = "c2VjcmV0";
+    @Value("${jwt.secret}")
+    private String secret;
 
-//    @Value("${jwt.expiration}")
-    private Long expiration = Long.valueOf(1000);
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
-    public String generateToken(UserDetails user){
+    public String generateToken(String username){
         Map<String, Object> claims = new HashMap<>();
 
-        return createToken(claims, user.getUsername());
+        return createToken(claims, username);
     }
 
     private Key getSigningKey() {
