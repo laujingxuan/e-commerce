@@ -28,15 +28,19 @@ public class TestItemInit implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         ItemType kitchen = new ItemType("kitchen", "items for kitchen", new ArrayList<>());
-        itemTypeService.saveItemType(kitchen);
+        itemTypeService.save(kitchen);
         ItemType food = new ItemType("food", "items for eat", new ArrayList<>());
-        itemTypeService.saveItemType(food);
+        itemTypeService.save(food);
 
         Item pan = new Item("pan", new BigDecimal(55.50), "pan for cooking", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", kitchen);
-        itemService.saveItem(pan);
+        itemService.save(pan);
         Item pizza = new Item("pizza", new BigDecimal(10.99), "nice pizza", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", food);
-        itemService.saveItem(pizza);
+        itemService.save(pizza);
         Item bread = new Item("bread", new BigDecimal(1.9), "nice bread", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", food);
-        itemService.saveItem(bread);
+        itemService.save(bread);
+
+//        Item item = itemService.findByName("pizza");
+//        System.out.println(item);
+//        System.out.println(item.getItemType().getName());
     }
 }

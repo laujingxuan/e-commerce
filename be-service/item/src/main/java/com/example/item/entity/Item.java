@@ -18,7 +18,7 @@ public class Item {
     private int id;
 
     @NotEmpty
-    @Column(name="name")
+    @Column(name="name", unique = true)
     private String name;
 
     @NotNull
@@ -133,7 +133,7 @@ public class Item {
                 ", createdTime=" + createdTime +
                 ", updatedTime=" + updatedTime +
                 ", userUuid='" + userUuid + '\'' +
-                ", itemType=" + itemType +
+                ", itemType=" + itemType.getName() +
                 '}';
     }
 }

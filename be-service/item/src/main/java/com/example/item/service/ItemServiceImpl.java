@@ -16,7 +16,7 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public boolean saveItem(Item item) {
+    public boolean save(Item item) {
         try {
             itemRepository.save(item);
             return true;
@@ -24,5 +24,10 @@ public class ItemServiceImpl implements ItemService{
             System.out.println(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public Item findByName(String name) {
+        return itemRepository.findByName(name);
     }
 }

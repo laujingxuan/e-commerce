@@ -14,12 +14,14 @@ public class ItemType {
     private int id;
 
     @NotEmpty
+    @Column(name="name", unique = true)
     private String name;
 
     @NotEmpty
+    @Column(name="description")
     private String description;
 
-    @OneToMany(mappedBy="itemType")
+    @OneToMany(mappedBy="itemType", fetch = FetchType.EAGER)
     private List<Item> itemList;
 
     public ItemType() {
