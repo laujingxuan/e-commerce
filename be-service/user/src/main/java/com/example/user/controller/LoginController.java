@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +52,8 @@ public class LoginController {
             // The SecurityContextHolder is designed to propagate the security context across different layers of your application. When a request is received, the security context is typically set at the beginning of the request processing, and it is accessible throughout the request handling chain. This allows you to access the authentication information and perform authorization checks at any point during the request processing
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String token = jwtTokenService.generateToken((String) authentication.getPrincipal());
+            UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            String token = jwtTokenService.generateToken(user);
 
             return ResponseEntity.ok().body(new AuthenticationResponse(token));
         } catch (AuthenticationException e){

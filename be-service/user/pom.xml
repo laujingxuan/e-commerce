@@ -17,7 +17,7 @@
     </properties>
     <dependencies>
 <!--        Failed to trigger the function even after import shared here -->
-<!--        <dependency>-->
+<!--        <dependency>-->`
 <!--            <groupId>com.example</groupId>-->
 <!--            <artifactId>shared</artifactId>-->
 <!--            <version>0.0.1-SNAPSHOT</version>-->

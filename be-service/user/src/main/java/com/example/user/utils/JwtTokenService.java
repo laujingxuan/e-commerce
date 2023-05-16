@@ -1,17 +1,17 @@
 package com.example.user.utils;
 
+import com.example.user.entity.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -24,10 +24,10 @@ public class JwtTokenService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(String username){
+    public String generateToken(UserDetails userDetails){
         Map<String, Object> claims = new HashMap<>();
-
-        return createToken(claims, username);
+        claims.put("role", userDetails.getAuthorities());
+        return createToken(claims, userDetails.getUsername());
     }
 
     private Key getSigningKey() {
@@ -45,8 +45,24 @@ public class JwtTokenService {
     }
 
     public Boolean validateToken(String token, UserDetails user) {
-        String username = extractUsername(token);
-        return (username.equals(user.getUsername()) && !isTokenExpired(token));
+        try {
+            Collection<? extends GrantedAuthority> authorities = extractAuthorities(token);
+            for (GrantedAuthority authority: authorities){
+                // IllegalArgumentException will be thrown when value not existed in enum
+                Role.valueOf(authority.getAuthority());
+            }
+            String username = extractUsername(token);
+            return (username.equals(user.getUsername()) && !isTokenExpired(token));
+        } catch (Exception e){
+            return false;
+        }
+
+    }
+
+    public Collection<? extends GrantedAuthority> extractAuthorities(String token){
+        Claims claims = extractAllClaims(token);
+        Collection<? extends GrantedAuthority> authorities = (Collection<? extends GrantedAuthority>)claims.get("role");
+        return authorities;
     }
 
     public String extractUsername(String token) {

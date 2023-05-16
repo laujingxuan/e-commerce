@@ -1,12 +1,17 @@
 package com.example.user.entity;
 
+import com.example.user.entity.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 //The UserDetails interface in Spring Security is an essential part of the authentication process. By implementing this interface, you provide necessary information about the user to Spring Security, allowing it to perform authentication and authorization checks effectively.
 @Entity
@@ -18,9 +23,14 @@ public class User implements UserDetails {
     @Column(name="id")
     private String id;
 
+    // if want to enforce uniqueness across combinations of columns, can use @UniqueConstraint at table level instead
+    // example: @Table(name = "user", uniqueConstraints = {
+    //        @UniqueConstraint(columnNames = "email"),
+    //        @UniqueConstraint(columnNames = "username")
+    //})
     @NotEmpty
-    @Size(min=6, max=20)
-    @Column(name="username")
+    @Size(min=4, max=20)
+    @Column(name="username", unique = true)
     private String username;
 
     @NotEmpty
@@ -30,8 +40,15 @@ public class User implements UserDetails {
 
     @NotEmpty
     @Size(min=6, max=20)
-    @Column(name="email")
+    @Column(name="email", unique = true)
     private String email;
+
+    // The @Enumerated(EnumType.STRING) annotation in JPA (Java Persistence API) is used to specify the mapping of an enum type attribute to its corresponding database representation.
+    // @Enumerated(EnumType.STRING) indicates that the enum values of the role field should be stored as strings in the database
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    private Role role;
 
     public User() {
     }
@@ -40,6 +57,13 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    public User(String username, String password, String email, Role role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
     }
 
     public String getId() {
@@ -66,9 +90,20 @@ public class User implements UserDetails {
         this.email = email;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    // The SimpleGrantedAuthority class simplifies the creation of GrantedAuthority instances by providing a straightforward constructor that takes a String parameter representing the authority.
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.role.toString()));
+        return authorities;
     }
 
     @Override
@@ -108,6 +143,7 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", role=" + role +
                 '}';
     }
 }
