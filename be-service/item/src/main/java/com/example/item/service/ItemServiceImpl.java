@@ -5,6 +5,8 @@ import com.example.item.entity.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ItemServiceImpl implements ItemService{
 
@@ -29,5 +31,15 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public Item findByName(String name) {
         return itemRepository.findByName(name);
+    }
+
+    @Override
+    public Item findByNameAndUserUuid(String name, String userUuid) {
+        return itemRepository.findByNameAndUserUuid(name, userUuid);
+    }
+
+    @Override
+    public List<Item> findByItemTypeName(String itemTypeName) {
+        return itemRepository.findByItemTypeName(itemTypeName);
     }
 }

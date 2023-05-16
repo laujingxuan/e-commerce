@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TestItemInit implements ApplicationRunner {
@@ -42,5 +43,11 @@ public class TestItemInit implements ApplicationRunner {
 //        Item item = itemService.findByName("pizza");
 //        System.out.println(item);
 //        System.out.println(item.getItemType().getName());
+//        System.out.println(itemService.findByNameAndUserUuid("pizza", "4184e5fd-6fd1-40cf-a57b-3167fd19137f"));
+//        System.out.println(itemService.findByNameAndUserUuid("invalid", "4184e5fd-6fd1-40cf-a57b-3167fd19137f"));
+        List<Item> items = itemService.findByItemTypeName("food");
+        for (Item item: items){
+            System.out.println(item.getItemType());
+        }
     }
 }
