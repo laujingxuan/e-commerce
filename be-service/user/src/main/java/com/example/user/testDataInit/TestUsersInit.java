@@ -2,7 +2,7 @@ package com.example.user.testDataInit;
 
 import com.example.user.entity.User;
 import com.example.user.entity.enums.Role;
-import com.example.user.serviceImpl.UserService;
+import com.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

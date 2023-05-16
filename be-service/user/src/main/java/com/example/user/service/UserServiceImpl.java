@@ -1,4 +1,4 @@
-package com.example.user.serviceImpl;
+package com.example.user.service;
 
 import com.example.user.dao.UserRepository;
 import com.example.user.entity.User;
