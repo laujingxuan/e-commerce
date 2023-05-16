@@ -45,9 +45,9 @@ public class TestItemInit implements ApplicationRunner {
 //        System.out.println(item.getItemType().getName());
 //        System.out.println(itemService.findByNameAndUserUuid("pizza", "4184e5fd-6fd1-40cf-a57b-3167fd19137f"));
 //        System.out.println(itemService.findByNameAndUserUuid("invalid", "4184e5fd-6fd1-40cf-a57b-3167fd19137f"));
-        List<Item> items = itemService.findByItemTypeName("food");
-        for (Item item: items){
-            System.out.println(item.getItemType());
-        }
+//        List<Item> items = itemService.findByItemTypeName("food");
+//        for (Item item: items){
+//            System.out.println(item.getItemType());
+//        }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.item.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +46,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name="item_type_id")
+    @JsonManagedReference // Add this annotation to control serialization
     private ItemType itemType;
 
     public Item() {
