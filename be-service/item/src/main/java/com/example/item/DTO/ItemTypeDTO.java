@@ -12,8 +12,10 @@ public class ItemTypeDTO {
 
     private int id;
 
+    @NotEmpty
     private String name;
 
+    @NotEmpty
     private String description;
 
     private List<ItemDTO> itemList;

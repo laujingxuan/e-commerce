@@ -1,6 +1,9 @@
 package com.example.item.DTO;
 
 import com.example.item.entity.Item;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -9,19 +12,23 @@ public class ItemDTO {
 
     private int id;
 
+    @NotEmpty
     private String name;
 
-
+    @NotNull
     private BigDecimal price;
 
+    @NotEmpty
     private String description;
 
     private Timestamp createdTime;
 
     private Timestamp updatedTime;
 
+    @NotEmpty
     private String userUuid;
 
+    @Min(value = 1, message = "Value must be greater than or equal to 1")
     private int itemTypeId;
 
     private String itemTypeName;

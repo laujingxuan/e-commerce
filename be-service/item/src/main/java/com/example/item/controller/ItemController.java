@@ -3,12 +3,12 @@ package com.example.item.controller;
 import com.example.item.DTO.ItemDTO;
 import com.example.item.entity.Item;
 import com.example.item.service.ItemService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +34,18 @@ public class ItemController {
             return ResponseEntity.ok().body(item);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/items")
+    public ResponseEntity<Void> createItem(@Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            System.out.println("Error: " + bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().build();
+        }
+        ItemDTO createdItem = itemService.create(itemDTO);
+        if (createdItem != null){
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

@@ -20,7 +20,7 @@ public class ItemMapper {
     }
 
     public Item mapToEntity(ItemDTO itemDTO){
-        // The mapToDTO method itself does not automatically handle relationships such as one-to-one mapping in entity objects. By default, the ModelMapper library maps properties based on their names and types, but it doesn't automatically handle relationships between objects.
+        // The map method does not automatically handle relationships such as one-to-one mapping in entity objects. By default, the ModelMapper library maps properties based on their names and types, but it doesn't automatically handle relationships between objects.
         Item item = modelMapper.map(itemDTO, Item.class);
         item.setUpdatedTime(Timestamp.valueOf(LocalDateTime.now()));
         return item;
