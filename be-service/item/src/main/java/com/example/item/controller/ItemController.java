@@ -1,5 +1,6 @@
 package com.example.item.controller;
 
+import com.example.item.DTO.ItemDTO;
 import com.example.item.entity.Item;
 import com.example.item.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,13 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public ResponseEntity<List<Item>> getAllItems(){
+    public ResponseEntity<List<ItemDTO>> getAllItems(){
         return ResponseEntity.ok().body(itemService.findAll());
     }
 
     @GetMapping("/items/{id}")
     public ResponseEntity<?> getItem(@PathVariable int id){
-        Item item = itemService.findById(id);
+        ItemDTO item = itemService.findById(id);
         if (item != null){
             return ResponseEntity.ok().body(item);
         }

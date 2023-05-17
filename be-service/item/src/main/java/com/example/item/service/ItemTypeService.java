@@ -1,9 +1,12 @@
 package com.example.item.service;
 
+import com.example.item.DTO.ItemTypeDTO;
 import com.example.item.entity.ItemType;
 
 public interface ItemTypeService {
-    boolean save(ItemType itemType);
+    ItemTypeDTO create(ItemTypeDTO ItemTypeDTO);
 
-    ItemType findByName(String name);
+    ItemTypeDTO findById(int id);
+
+    ItemTypeDTO findByName(String name);
 }

@@ -1,19 +1,19 @@
 package com.example.item.service;
 
-import com.example.item.entity.Item;
+import com.example.item.DTO.ItemDTO;
 
 import java.util.List;
 
 public interface ItemService {
-    boolean save(Item item);
+    ItemDTO create(ItemDTO item);
 
-    Item findById(int id);
+    ItemDTO findById(int id);
 
-    Item findByName(String name);
+    ItemDTO findByName(String name);
 
-    Item findByNameAndUserUuid(String name, String userUuid);
+    ItemDTO findByNameAndUserUuid(String name, String userUuid);
 
-    List<Item> findByItemTypeName(String itemTypeName);
+    List<ItemDTO> findByItemTypeName(String itemTypeName);
 
-    List<Item> findAll();
+    List<ItemDTO> findAll();
 }
