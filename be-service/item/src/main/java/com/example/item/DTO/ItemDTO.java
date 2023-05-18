@@ -25,7 +25,6 @@ public class ItemDTO {
 
     private Timestamp updatedTime;
 
-    @NotEmpty
     private String userUuid;
 
     @Min(value = 1, message = "Value must be greater than or equal to 1")

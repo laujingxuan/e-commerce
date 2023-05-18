@@ -41,6 +41,7 @@ public class ItemServiceImpl implements ItemService {
             if (!itemType.isPresent()) {
                 throw new IllegalArgumentException("itemType not found");
             }
+            //TODO: Should set item UUID from the user info retrieved from JWT token
             item.setItemType(itemType.get());
             item.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
             Item createdItem = itemRepository.save(item);
@@ -77,6 +78,20 @@ public class ItemServiceImpl implements ItemService {
         } catch (Exception e){
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    @Override
+    public boolean deleteById(int id) {
+        try {
+            if (!itemRepository.findById(id).isPresent()){
+                throw new IllegalArgumentException("Item not found");
+            }
+            itemRepository.deleteById(id);
+            return true;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 

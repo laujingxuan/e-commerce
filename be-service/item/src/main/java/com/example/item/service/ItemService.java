@@ -9,6 +9,8 @@ public interface ItemService {
 
     ItemDTO update(ItemDTO itemDTO);
 
+    boolean deleteById(int id);
+
     ItemDTO findById(int id);
 
     ItemDTO findByName(String name);

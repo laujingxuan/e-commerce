@@ -64,4 +64,13 @@ public class ItemController {
         }
         return ResponseEntity.badRequest().build();
     }
+
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable int id){
+        boolean isDeleted = itemService.deleteById(id);
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }
