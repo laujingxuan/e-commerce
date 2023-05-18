@@ -2,6 +2,7 @@ package com.example.item.service;
 
 import com.example.item.DTO.ItemDTO;
 import com.example.item.ModelMapper.ItemMapper;
+import com.example.item.common.enums.Role;
 import com.example.item.dao.ItemRepository;
 import com.example.item.dao.ItemTypeRepository;
 import com.example.item.entity.Item;
@@ -31,68 +32,6 @@ public class ItemServiceImpl implements ItemService {
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
         this.itemTypeRepository = itemTypeRepository;
-    }
-
-    @Override
-    public ItemDTO create(ItemDTO itemDTO) {
-        try {
-            Item item = itemMapper.mapToEntity(itemDTO);
-            Optional<ItemType> itemType = itemTypeRepository.findById(itemDTO.getItemTypeId());
-            if (!itemType.isPresent()) {
-                throw new IllegalArgumentException("itemType not found");
-            }
-            //TODO: Should set item UUID from the user info retrieved from JWT token
-            item.setItemType(itemType.get());
-            item.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
-            Item createdItem = itemRepository.save(item);
-            itemDTO = itemMapper.mapToDTO(createdItem);
-            return itemDTO;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public ItemDTO update(ItemDTO itemDTO) {
-        //Not able to update userUuid and createdTime fields
-        try {
-            Optional<Item> itemOptional = itemRepository.findById(itemDTO.getId());
-            if (!itemOptional.isPresent()){
-                throw new IllegalArgumentException("item not found");
-            }
-            Item item = itemOptional.get();
-
-            Optional<ItemType> itemType = itemTypeRepository.findById(itemDTO.getItemTypeId());
-            if (!itemType.isPresent()){
-                throw new IllegalArgumentException("itemType not found");
-            }
-            item.setUpdatedTime(Timestamp.valueOf(LocalDateTime.now()));
-            item.setName(itemDTO.getName());
-            item.setDescription(itemDTO.getDescription());
-            item.setPrice(itemDTO.getPrice());
-            item.setItemType(itemType.get());
-            Item updatedItem = itemRepository.save(item);
-            itemDTO = itemMapper.mapToDTO(updatedItem);
-            return itemDTO;
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    @Override
-    public boolean deleteById(int id) {
-        try {
-            if (!itemRepository.findById(id).isPresent()){
-                throw new IllegalArgumentException("Item not found");
-            }
-            itemRepository.deleteById(id);
-            return true;
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return false;
-        }
     }
 
     @Override
@@ -137,5 +76,86 @@ public class ItemServiceImpl implements ItemService {
             itemDTOList.add(itemDTO);
         }
         return itemDTOList;
+    }
+
+    @Override
+    public ItemDTO create(ItemDTO itemDTO) {
+        try {
+            Item item = itemMapper.mapToEntity(itemDTO);
+            ItemType itemType = getItemTypeById(itemDTO.getItemTypeId());
+            validateUniqueItemName(item.getName());
+            item.setItemType(itemType);
+            item.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
+            Item createdItem = itemRepository.save(item);
+            itemDTO = itemMapper.mapToDTO(createdItem);
+            return itemDTO;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public ItemDTO update(String authority, ItemDTO itemDTO) {
+        //Not able to update userUuid and createdTime fields
+        try {
+            Item item = getItemById(itemDTO.getId());
+            validateUserAuthority(authority, itemDTO.getUserUuid(), item.getUserUuid());
+
+            ItemType itemType = getItemTypeById(itemDTO.getItemTypeId());
+            item.setUpdatedTime(Timestamp.valueOf(LocalDateTime.now()));
+            item.setName(itemDTO.getName());
+            item.setDescription(itemDTO.getDescription());
+            item.setPrice(itemDTO.getPrice());
+            item.setItemType(itemType);
+            Item updatedItem = itemRepository.save(item);
+            itemDTO = itemMapper.mapToDTO(updatedItem);
+            return itemDTO;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public boolean deleteById(String authority, String userUuid, int id) {
+        try {
+            Item item = getItemById(id);
+            validateUserAuthority(authority, userUuid, item.getUserUuid());
+            itemRepository.deleteById(id);
+            return true;
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    private ItemType getItemTypeById(int id) throws IllegalArgumentException {
+        Optional<ItemType> itemTypeOptional = itemTypeRepository.findById(id);
+        if (!itemTypeOptional.isPresent()) {
+            throw new IllegalArgumentException("itemType not found");
+        }
+        return itemTypeOptional.get();
+    }
+
+    private Item getItemById(int id) throws IllegalArgumentException {
+        Optional<Item> itemOptional = itemRepository.findById(id);
+        if (!itemOptional.isPresent()) {
+            throw new IllegalArgumentException("itemType not found");
+        }
+        return itemOptional.get();
+    }
+
+    private void validateUniqueItemName(String itemName) throws IllegalArgumentException {
+        Item existingItem = itemRepository.findByName(itemName);
+        if (existingItem != null){
+            throw new IllegalArgumentException("Non-unique item name");
+        }
+    }
+
+    private void validateUserAuthority(String authority, String requestUserUuid, String dbUserUuid) throws IllegalAccessException {
+        if (Role.valueOf(authority) != Role.ROLE_ADMIN && !requestUserUuid.equals(dbUserUuid)){
+            throw new IllegalAccessException("item is not belong to user");
+        }
     }
 }

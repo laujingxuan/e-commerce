@@ -6,13 +6,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,6 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    // The @Value("${jwt.secret}") annotation is used to inject a value from a property file into a variable in Spring.
     @Value("${jwt.secret}")
     private String secret;
 
@@ -30,7 +28,7 @@ public class JwtTokenService {
 
     public String generateToken(UserDetails userDetails, String userUuid) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities());
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
         claims.put("userUuid", userUuid);
         return createToken(claims, userDetails.getUsername());
     }
@@ -51,11 +49,9 @@ public class JwtTokenService {
 
     public Boolean validateToken(String token) {
         try {
-            Collection<? extends GrantedAuthority> authorities = extractAuthorities(token);
-            for (GrantedAuthority authority : authorities) {
-                // IllegalArgumentException will be thrown when value not existed in enum
-                Role.valueOf(authority.getAuthority());
-            }
+            String authority = extractAuthority(token);
+            // IllegalArgumentException will be thrown when value not existed in enum
+            Role.valueOf(authority);
             return !isTokenExpired(token);
         } catch (Exception e) {
             return false;
@@ -67,10 +63,10 @@ public class JwtTokenService {
         return (String) extractAllClaims(token).get("userUuid");
     }
 
-    public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
+    public String extractAuthority(String token) {
         Claims claims = extractAllClaims(token);
-        Collection<? extends GrantedAuthority> authorities = (Collection<? extends GrantedAuthority>) claims.get("role");
-        return authorities;
+        String role = (String) claims.get("role");
+        return role;
     }
 
     public String extractUsername(String token) {
@@ -84,6 +80,15 @@ public class JwtTokenService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public String extractJwtTokenFromRequest(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
+            // Token will be passed in as "Bearer xxxxxxx", hence it will start with 7th index
+            return authorizationHeader.substring(7);
+        }
+        return null;
     }
 
     private Claims extractAllClaims(String token) {

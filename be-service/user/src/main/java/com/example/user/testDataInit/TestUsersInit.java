@@ -29,5 +29,8 @@ public class TestUsersInit implements ApplicationRunner {
 
         User normalUser = new User("user", passwordEncoder.encode("user123"), "user@hotmail.com", Role.ROLE_USER);
         userService.saveUser(normalUser);
+
+        User normalUser2 = new User("john", passwordEncoder.encode("john123"), "john@hotmail.com", Role.ROLE_USER);
+        userService.saveUser(normalUser2);
     }
 }

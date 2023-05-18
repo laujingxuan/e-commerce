@@ -7,9 +7,9 @@ import java.util.List;
 public interface ItemService {
     ItemDTO create(ItemDTO itemDTO);
 
-    ItemDTO update(ItemDTO itemDTO);
+    ItemDTO update(String authority, ItemDTO itemDTO);
 
-    boolean deleteById(int id);
+    boolean deleteById(String authority, String userUuid, int id);
 
     ItemDTO findById(int id);
 

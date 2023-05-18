@@ -37,11 +37,11 @@ public class TestItemInit implements ApplicationRunner {
         food = itemTypeService.create(food);
 //        System.out.println(food);
 
-        ItemDTO pan = new ItemDTO("pan", new BigDecimal(55.50), "pan for cooking", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", kitchen.getId());
+        ItemDTO pan = new ItemDTO("pan", new BigDecimal(55.50), "pan for cooking", "92787033-333d-41db-9d2e-bc381a3dc91f", kitchen.getId());
         itemService.create(pan);
-        ItemDTO pizza = new ItemDTO("pizza", new BigDecimal(10.99), "nice pizza", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", food.getId());
+        ItemDTO pizza = new ItemDTO("pizza", new BigDecimal(10.99), "nice pizza", "92787033-333d-41db-9d2e-bc381a3dc91f", food.getId());
         itemService.create(pizza);
-        ItemDTO bread = new ItemDTO("bread", new BigDecimal(1.9), "nice bread", "4184e5fd-6fd1-40cf-a57b-3167fd19137f", food.getId());
+        ItemDTO bread = new ItemDTO("bread", new BigDecimal(1.9), "nice bread", "92787033-333d-41db-9d2e-bc381a3dc91f", food.getId());
         itemService.create(bread);
 
 //        Item item = itemService.findByName("pizza");
