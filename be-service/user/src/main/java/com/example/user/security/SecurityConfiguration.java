@@ -1,5 +1,7 @@
 package com.example.user.security;
 
+import com.example.user.entity.User;
+import com.example.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,15 +46,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager(UserService userService, PasswordEncoder passwordEncoder) {
         return authentication -> {
             String username = authentication.getPrincipal().toString();
             String password = authentication.getCredentials().toString();
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            User user = userService.loadUserByUsername(username);
 
-            if (passwordEncoder.matches(password, userDetails.getPassword())) {
-                return new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
             } else {
                 throw new BadCredentialsException("Invalid username or password");
             }

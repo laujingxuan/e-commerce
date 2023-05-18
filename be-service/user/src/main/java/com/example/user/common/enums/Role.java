@@ -1,4 +1,4 @@
-package com.example.user.entity.enums;
+package com.example.user.common.enums;
 
 public enum Role {
     ROLE_USER,

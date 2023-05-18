@@ -23,14 +23,15 @@ public class ItemController {
 
     @GetMapping("/items")
     public ResponseEntity<List<ItemDTO>> getAllItems(){
-        return ResponseEntity.ok().body(itemService.findAll());
+        List<ItemDTO> itemDTOS = itemService.findAll();
+        return ResponseEntity.ok().body(itemDTOS);
     }
 
     @GetMapping("/items/{id}")
     public ResponseEntity<?> getItem(@PathVariable int id){
-        ItemDTO item = itemService.findById(id);
-        if (item != null){
-            return ResponseEntity.ok().body(item);
+        ItemDTO itemDTO = itemService.findById(id);
+        if (itemDTO != null){
+            return ResponseEntity.ok().body(itemDTO);
         }
         return ResponseEntity.notFound().build();
     }
@@ -51,16 +52,14 @@ public class ItemController {
 
     @PutMapping("/items")
     public ResponseEntity<Void> updateItem(@Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors() || itemDTO.getId() == 0){
-            if (bindingResult.hasErrors()){
-                System.out.println(bindingResult.getAllErrors());
-            }
+        if (bindingResult.hasErrors()){
+            System.out.println(bindingResult.getAllErrors());
             System.out.println("Failed binding result");
             return ResponseEntity.badRequest().build();
         }
         ItemDTO updatedItem = itemService.update(itemDTO);
         if (updatedItem != null){
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
     }
@@ -69,7 +68,7 @@ public class ItemController {
     public ResponseEntity<Void> deleteItem(@PathVariable int id){
         boolean isDeleted = itemService.deleteById(id);
         if (isDeleted){
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.badRequest().build();
     }

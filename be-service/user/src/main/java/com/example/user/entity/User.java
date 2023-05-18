@@ -1,6 +1,6 @@
 package com.example.user.entity;
 
-import com.example.user.entity.enums.Role;
+import com.example.user.common.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

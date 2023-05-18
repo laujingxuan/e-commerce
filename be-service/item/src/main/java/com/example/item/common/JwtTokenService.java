@@ -1,6 +1,6 @@
-package com.example.user.utils;
+package com.example.item.common;
 
-import com.example.user.entity.enums.Role;
+import com.example.item.common.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.security.Key;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -24,9 +28,10 @@ public class JwtTokenService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails, String userUuid) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userDetails.getAuthorities());
+        claims.put("userUuid", userUuid);
         return createToken(claims, userDetails.getUsername());
     }
 
@@ -35,7 +40,7 @@ public class JwtTokenService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(Map<String, Object> claims, String subject){
+    public String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expiration);
 
@@ -44,24 +49,27 @@ public class JwtTokenService {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(now).setExpiration(expirationDate).signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    public Boolean validateToken(String token, UserDetails user) {
+    public Boolean validateToken(String token) {
         try {
             Collection<? extends GrantedAuthority> authorities = extractAuthorities(token);
-            for (GrantedAuthority authority: authorities){
+            for (GrantedAuthority authority : authorities) {
                 // IllegalArgumentException will be thrown when value not existed in enum
                 Role.valueOf(authority.getAuthority());
             }
-            String username = extractUsername(token);
-            return (username.equals(user.getUsername()) && !isTokenExpired(token));
-        } catch (Exception e){
+            return !isTokenExpired(token);
+        } catch (Exception e) {
             return false;
         }
 
     }
 
-    public Collection<? extends GrantedAuthority> extractAuthorities(String token){
+    public String extractUserUuid(String token) {
+        return (String) extractAllClaims(token).get("userUuid");
+    }
+
+    public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
         Claims claims = extractAllClaims(token);
-        Collection<? extends GrantedAuthority> authorities = (Collection<? extends GrantedAuthority>)claims.get("role");
+        Collection<? extends GrantedAuthority> authorities = (Collection<? extends GrantedAuthority>) claims.get("role");
         return authorities;
     }
 
@@ -85,5 +93,4 @@ public class JwtTokenService {
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
-
 }

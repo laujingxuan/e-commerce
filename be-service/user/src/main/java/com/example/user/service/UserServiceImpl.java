@@ -5,6 +5,8 @@ import com.example.user.entity.User;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,5 +32,15 @@ public class UserServiceImpl implements UserService {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+
+        if (user == null){
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
     }
 }

@@ -1,8 +1,10 @@
 package com.example.user.controller;
 
+import com.example.user.entity.User;
 import com.example.user.request.LoginRequest;
 import com.example.user.response.AuthenticationResponse;
-import com.example.user.utils.JwtTokenService;
+import com.example.user.service.UserService;
+import com.example.user.common.JwtTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,14 +23,14 @@ public class LoginController {
 
     private AuthenticationManager authenticationManager;
 
-    private UserDetailsService userDetailsService;
+    private UserService userService;
 
     private JwtTokenService jwtTokenService;
 
     @Autowired
-    public LoginController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtTokenService jwtTokenService){
+    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtTokenService jwtTokenService){
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.jwtTokenService = jwtTokenService;
     }
 
@@ -52,8 +52,8 @@ public class LoginController {
             // The SecurityContextHolder is designed to propagate the security context across different layers of your application. When a request is received, the security context is typically set at the beginning of the request processing, and it is accessible throughout the request handling chain. This allows you to access the authentication information and perform authorization checks at any point during the request processing
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UserDetails user = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            String token = jwtTokenService.generateToken(user);
+            User user = userService.loadUserByUsername(loginRequest.getUsername());
+            String token = jwtTokenService.generateToken(user, user.getId());
 
             return ResponseEntity.ok().body(new AuthenticationResponse(token));
         } catch (AuthenticationException e){
