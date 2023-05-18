@@ -43,10 +43,38 @@ public class ItemServiceImpl implements ItemService {
             }
             item.setItemType(itemType.get());
             item.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
-            item = itemRepository.save(item);
-            itemDTO = itemMapper.mapToDTO(item);
+            Item createdItem = itemRepository.save(item);
+            itemDTO = itemMapper.mapToDTO(createdItem);
             return itemDTO;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public ItemDTO update(ItemDTO itemDTO) {
+        //Not able to update userUuid and createdTime fields
+        try {
+            Optional<Item> itemOptional = itemRepository.findById(itemDTO.getId());
+            if (!itemOptional.isPresent()){
+                throw new IllegalArgumentException("item not found");
+            }
+            Item item = itemOptional.get();
+
+            Optional<ItemType> itemType = itemTypeRepository.findById(itemDTO.getItemTypeId());
+            if (!itemType.isPresent()){
+                throw new IllegalArgumentException("itemType not found");
+            }
+            item.setUpdatedTime(Timestamp.valueOf(LocalDateTime.now()));
+            item.setName(itemDTO.getName());
+            item.setDescription(itemDTO.getDescription());
+            item.setPrice(itemDTO.getPrice());
+            item.setItemType(itemType.get());
+            Item updatedItem = itemRepository.save(item);
+            itemDTO = itemMapper.mapToDTO(updatedItem);
+            return itemDTO;
+        } catch (Exception e){
             System.out.println(e.getMessage());
             return null;
         }

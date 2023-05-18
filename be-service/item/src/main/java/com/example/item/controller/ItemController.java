@@ -1,7 +1,6 @@
 package com.example.item.controller;
 
 import com.example.item.DTO.ItemDTO;
-import com.example.item.entity.Item;
 import com.example.item.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +39,28 @@ public class ItemController {
     public ResponseEntity<Void> createItem(@Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             System.out.println("Error: " + bindingResult.getAllErrors());
+            System.out.println("Failed binding result");
             return ResponseEntity.badRequest().build();
         }
         ItemDTO createdItem = itemService.create(itemDTO);
         if (createdItem != null){
             return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/items")
+    public ResponseEntity<Void> updateItem(@Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
+        if (bindingResult.hasErrors() || itemDTO.getId() == 0){
+            if (bindingResult.hasErrors()){
+                System.out.println(bindingResult.getAllErrors());
+            }
+            System.out.println("Failed binding result");
+            return ResponseEntity.badRequest().build();
+        }
+        ItemDTO updatedItem = itemService.update(itemDTO);
+        if (updatedItem != null){
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
         return ResponseEntity.badRequest().build();
     }

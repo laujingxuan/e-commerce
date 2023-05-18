@@ -5,7 +5,9 @@ import com.example.item.DTO.ItemDTO;
 import java.util.List;
 
 public interface ItemService {
-    ItemDTO create(ItemDTO item);
+    ItemDTO create(ItemDTO itemDTO);
+
+    ItemDTO update(ItemDTO itemDTO);
 
     ItemDTO findById(int id);
 
