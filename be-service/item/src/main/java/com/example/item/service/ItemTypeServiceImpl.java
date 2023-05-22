@@ -1,7 +1,7 @@
 package com.example.item.service;
 
 import com.example.item.DTO.ItemTypeDTO;
-import com.example.item.ModelMapper.ItemTypeMapper;
+import com.example.item.modelMapper.ItemTypeMapper;
 import com.example.item.dao.ItemTypeRepository;
 import com.example.item.entity.ItemType;
 import org.springframework.beans.factory.annotation.Autowired;

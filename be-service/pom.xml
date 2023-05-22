@@ -19,7 +19,7 @@
         <module>shared</module>
         <module>user</module>
         <module>item</module>
-        <module>email</module>
+        <module>action</module>
     </modules>
     <properties>
         <java.version>17</java.version>

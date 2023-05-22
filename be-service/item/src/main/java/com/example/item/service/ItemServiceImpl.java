@@ -1,7 +1,7 @@
 package com.example.item.service;
 
 import com.example.item.DTO.ItemDTO;
-import com.example.item.ModelMapper.ItemMapper;
+import com.example.item.modelMapper.ItemMapper;
 import com.example.item.common.enums.Role;
 import com.example.item.dao.ItemRepository;
 import com.example.item.dao.ItemTypeRepository;
