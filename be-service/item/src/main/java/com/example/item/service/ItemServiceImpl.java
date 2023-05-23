@@ -1,6 +1,8 @@
 package com.example.item.service;
 
 import com.example.item.DTO.ItemDTO;
+import com.example.item.common.enums.ActionOnItem;
+import com.example.item.kafka.ActionKafkaUtils;
 import com.example.item.modelMapper.ItemMapper;
 import com.example.item.common.enums.Role;
 import com.example.item.dao.ItemRepository;
@@ -27,11 +29,14 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemTypeRepository itemTypeRepository;
 
+    private ActionKafkaUtils actionKafkaUtils;
+
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, ItemMapper itemMapper, ItemTypeRepository itemTypeRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, ItemMapper itemMapper, ItemTypeRepository itemTypeRepository, ActionKafkaUtils actionKafkaUtils) {
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
         this.itemTypeRepository = itemTypeRepository;
+        this.actionKafkaUtils = actionKafkaUtils;
     }
 
     @Override
@@ -95,6 +100,10 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    public void sendMsgToUserAction(Item item, ActionOnItem actionOnItem){
+        actionKafkaUtils.sendMessage(actionOnItem, item.getId(), item.getUserUuid());
+    }
+
     @Override
     public ItemDTO update(String authority, ItemDTO itemDTO) {
         //Not able to update userUuid and createdTime fields
@@ -109,6 +118,7 @@ public class ItemServiceImpl implements ItemService {
             item.setPrice(itemDTO.getPrice());
             item.setItemType(itemType);
             Item updatedItem = itemRepository.save(item);
+            sendMsgToUserAction(updatedItem, ActionOnItem.UPDATE_ITEM);
             itemDTO = itemMapper.mapToDTO(updatedItem);
             return itemDTO;
         } catch (Exception e){
