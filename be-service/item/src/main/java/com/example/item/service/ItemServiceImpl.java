@@ -92,6 +92,7 @@ public class ItemServiceImpl implements ItemService {
             item.setItemType(itemType);
             item.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
             Item createdItem = itemRepository.save(item);
+            sendMsgToUserAction(item, ActionOnItem.CREATE_ITEM);
             itemDTO = itemMapper.mapToDTO(createdItem);
             return itemDTO;
         } catch (Exception e) {
@@ -133,6 +134,7 @@ public class ItemServiceImpl implements ItemService {
             Item item = getItemById(id);
             validateUserAuthority(authority, userUuid, item.getUserUuid());
             itemRepository.deleteById(id);
+            sendMsgToUserAction(item, ActionOnItem.DELETE_ITEM);
             return true;
         } catch (Exception e){
             System.out.println(e.getMessage());
