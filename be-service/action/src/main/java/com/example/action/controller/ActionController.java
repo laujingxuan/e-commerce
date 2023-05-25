@@ -5,6 +5,8 @@ import com.example.action.common.JwtTokenService;
 import com.example.action.service.ActionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,43 +22,44 @@ public class ActionController {
 
     private JwtTokenService jwtTokenService;
 
+    private Logger logger = LoggerFactory.getLogger(ActionController.class);
+
     @Autowired
-    public ActionController(ActionService actionService, JwtTokenService jwtTokenService){
+    public ActionController(ActionService actionService, JwtTokenService jwtTokenService) {
         this.actionService = actionService;
         this.jwtTokenService = jwtTokenService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createUserAction(HttpServletRequest httpServletRequest, @Valid @RequestBody UserActionDTO userActionDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            System.out.println("Error: " + bindingResult.getAllErrors());
-            System.out.println("Failed binding result");
+    public ResponseEntity<Void> createUserAction(HttpServletRequest httpServletRequest, @Valid @RequestBody UserActionDTO userActionDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            logger.warn("Error during create user action binding: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
 
         String jwtToken = jwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
-        if (!jwtTokenService.validateToken(jwtToken)){
+        if (!jwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         UserActionDTO createdUserAction = actionService.create(userActionDTO);
-        if (createdUserAction == null){
+        if (createdUserAction == null) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/list/{pathUuid}")
-    public ResponseEntity<?> getUserActionList(@PathVariable String pathUuid, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> getUserActionList(@PathVariable String pathUuid, HttpServletRequest httpServletRequest) {
         String jwtToken = jwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
-        if (!jwtTokenService.validateToken(jwtToken)){
+        if (!jwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String userUuid = jwtTokenService.extractUserUuid(jwtToken);
         String authority = jwtTokenService.extractAuthority(jwtToken);
 
         List<UserActionDTO> userActionList = actionService.getUserActionList(pathUuid, userUuid, authority);
-        if (userActionList == null){
+        if (userActionList == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.ok().body(userActionList);

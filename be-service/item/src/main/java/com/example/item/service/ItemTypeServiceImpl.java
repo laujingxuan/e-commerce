@@ -4,6 +4,8 @@ import com.example.item.DTO.ItemTypeDTO;
 import com.example.item.modelMapper.ItemTypeMapper;
 import com.example.item.dao.ItemTypeRepository;
 import com.example.item.entity.ItemType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ItemTypeServiceImpl implements ItemTypeService{
+
+    private Logger logger = LoggerFactory.getLogger(ItemTypeServiceImpl.class);
 
     private ItemTypeRepository itemTypeRepository;
 
@@ -32,7 +36,7 @@ public class ItemTypeServiceImpl implements ItemTypeService{
             itemTypeDto = itemTypeMapper.mapToDTO(itemType);
             return itemTypeDto;
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error("Error for create itemType", e);
             return null;
         }
     }

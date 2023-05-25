@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
             } else if (e.getMessage().contains("username")) {
                 errMsg = "Username constraints not met";
             }
-            logger.warn("Save user: " + errMsg);
+            logger.warn("Save user: {}", errMsg);
         } catch (Exception e) {
             logger.error("Error while saving user", e);
         }
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
             userDetailsDTO.setUserActionDTOList(actionDTOList);
             return userDetailsDTO;
         } catch (Exception e) {
-            logger.error("Get user details: " + e);
+            logger.error("Get user details exception", e);
             return null;
         }
     }

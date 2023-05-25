@@ -5,6 +5,8 @@ import com.example.item.common.JwtTokenService;
 import com.example.item.service.ItemService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @RestController
 public class ItemController {
+
+    private Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     private JwtTokenService jwtTokenService;
 
@@ -44,8 +48,7 @@ public class ItemController {
     @PostMapping("/items")
     public ResponseEntity<Void> createItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
-            System.out.println("Error: " + bindingResult.getAllErrors());
-            System.out.println("Failed binding result");
+            logger.warn("Failed binding result: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
 
@@ -66,8 +69,7 @@ public class ItemController {
     @PutMapping("/items")
     public ResponseEntity<Void> updateItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
-            System.out.println(bindingResult.getAllErrors());
-            System.out.println("Failed binding result");
+            logger.warn("Failed binding result: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
 

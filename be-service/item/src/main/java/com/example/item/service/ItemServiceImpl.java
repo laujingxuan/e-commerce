@@ -9,6 +9,8 @@ import com.example.item.dao.ItemRepository;
 import com.example.item.dao.ItemTypeRepository;
 import com.example.item.entity.Item;
 import com.example.item.entity.ItemType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ItemServiceImpl implements ItemService {
+
+    private Logger logger = LoggerFactory.getLogger(ItemServiceImpl.class);
 
     private ItemRepository itemRepository;
 
@@ -96,7 +100,7 @@ public class ItemServiceImpl implements ItemService {
             itemDTO = itemMapper.mapToDTO(createdItem);
             return itemDTO;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.error("Error for create item", e);
             return null;
         }
     }
@@ -123,7 +127,7 @@ public class ItemServiceImpl implements ItemService {
             itemDTO = itemMapper.mapToDTO(updatedItem);
             return itemDTO;
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error("Error for update item", e);
             return null;
         }
     }
@@ -137,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
             sendMsgToUserAction(item, ActionOnItem.DELETE_ITEM);
             return true;
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error("Error for delete item", e);
             return false;
         }
     }

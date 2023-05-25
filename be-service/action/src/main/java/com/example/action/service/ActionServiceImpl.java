@@ -5,6 +5,8 @@ import com.example.action.common.enums.Role;
 import com.example.action.dao.UserActionRepository;
 import com.example.action.entity.UserAction;
 import com.example.action.modelMapper.UserActionMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.List;
 @Service
 @Transactional
 public class ActionServiceImpl implements ActionService{
+
+    private Logger logger = LoggerFactory.getLogger(ActionServiceImpl.class);
 
     private UserActionMapper userActionMapper;
 
@@ -38,7 +42,7 @@ public class ActionServiceImpl implements ActionService{
             userActionDTO = userActionMapper.mapToDTO(createdAction);
             return userActionDTO;
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error("Error while creating user action", e);
             return null;
         }
     }
@@ -58,7 +62,7 @@ public class ActionServiceImpl implements ActionService{
             }
             return dtoList;
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error("Error while retrieving user action list", e);
             return null;
         }
     }

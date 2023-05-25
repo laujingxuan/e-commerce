@@ -1,6 +1,8 @@
 package com.example.action.kafka;
 
 import com.example.action.common.enums.ActionOnItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -10,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 public class ActionKafkaUtils {
+
+    private Logger logger = LoggerFactory.getLogger(ActionKafkaUtils.class);
 
     private KafkaTemplate kafkaTemplate;
 
@@ -28,10 +32,10 @@ public class ActionKafkaUtils {
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, kafkaMsg);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
-                System.out.println("Sent message=[" + kafkaMsg +
+                logger.info("Sent message=[" + kafkaMsg +
                         "] with offset=[" + result.getRecordMetadata().offset() + "]");
             } else {
-                System.out.println("Unable to send message=[" +
+                logger.warn("Unable to send message=[" +
                         kafkaMsg + "] due to : " + ex.getMessage());
             }
         });
