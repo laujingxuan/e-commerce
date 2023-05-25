@@ -34,7 +34,7 @@ public class UserController {
         String userUuid = jwtTokenService.extractUserUuid(jwtToken);
         String authority = jwtTokenService.extractAuthority(jwtToken);
 
-        UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority);
+        UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken);
         if (userDetailsDTO != null){
             return ResponseEntity.ok().body(userDetailsDTO);
         }

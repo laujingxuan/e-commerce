@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class WebClientConfig {
     @Bean
     public WebClient webClient(){
-        // Configuring timeout behaviour
+        // Configuring timeout behaviour (Optional)
         // set the connection timeout via the ChannelOption.CONNECT_TIMEOUT_MILLIS option
         // set the read and write timeouts using a ReadTimeoutHandler and a WriteTimeoutHandler, respectively
         // configure a response timeout using the responseTimeout directive
