@@ -47,7 +47,7 @@ public class ActionServiceImpl implements ActionService{
     public List<UserActionDTO> getUserActionList(String pathUuid, String userUuid, String authority) {
         try {
             if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)){
-                throw new IllegalCallerException("Unauthorized user");
+                throw new IllegalAccessException("Unauthorized user");
             }
 
             List<UserAction> userActionList = userActionRepository.findByUserUuid(pathUuid);

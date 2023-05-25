@@ -1,6 +1,5 @@
-package com.example.action.DTO;
+package com.example.user.DTO;
 
-import com.example.action.common.enums.ActionOnItem;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -18,14 +17,14 @@ public class UserActionDTO {
     private int itemId;
 
     @NotNull
-    private ActionOnItem actionOnItem;
+    private String actionOnItem;
 
     private Timestamp actionTime;
 
     public UserActionDTO() {
     }
 
-    public UserActionDTO(String userUuid, int itemId, ActionOnItem actionOnItem, Timestamp actionTime) {
+    public UserActionDTO(String userUuid, int itemId, String actionOnItem, Timestamp actionTime) {
         this.userUuid = userUuid;
         this.itemId = itemId;
         this.actionOnItem = actionOnItem;
@@ -56,11 +55,11 @@ public class UserActionDTO {
         this.itemId = itemId;
     }
 
-    public ActionOnItem getActionOnItem() {
+    public String getActionOnItem() {
         return actionOnItem;
     }
 
-    public void setActionOnItem(ActionOnItem actionOnItem) {
+    public void setActionOnItem(String actionOnItem) {
         this.actionOnItem = actionOnItem;
     }
 
