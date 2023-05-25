@@ -6,12 +6,12 @@ import com.example.user.common.enums.Role;
 import com.example.user.dao.UserRepository;
 import com.example.user.entity.User;
 import com.example.user.modelMapper.UserMapper;
-import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +23,8 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     private UserRepository userRepository;
 
     private WebClient webClient;
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WebClient webClient, UserMapper userMapper){
+    public UserServiceImpl(UserRepository userRepository, WebClient webClient, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.webClient = webClient;
         this.userMapper = userMapper;
@@ -40,14 +42,16 @@ public class UserServiceImpl implements UserService {
     public void saveUser(User user) {
         try {
             userRepository.save(user);
-        } catch (Exception e){
-            if (e.getMessage().contains("email")){
-                System.out.println("email constraints not met");
-            } else if (e.getMessage().contains("username")){
-                System.out.println("username constraints not met");
-            } else {
-                System.out.println(e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            String errMsg = e.getMessage();
+            if (e.getMessage().contains("email")) {
+                errMsg = "Email constraints not met";
+            } else if (e.getMessage().contains("username")) {
+                errMsg = "Username constraints not met";
             }
+            logger.warn("Save user: " + errMsg);
+        } catch (Exception e) {
+            logger.error("Error while saving user", e);
         }
     }
 
@@ -55,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
 
-        if (user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
         return user;
@@ -64,11 +68,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken) {
         try {
-            if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)){
+            if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)) {
                 throw new IllegalAccessException("User is unauthorized");
             }
             Optional<User> optionalUser = userRepository.findById(userUuid);
-            if (!optionalUser.isPresent()){
+            if (!optionalUser.isPresent()) {
                 throw new UsernameNotFoundException("User info is not found");
             }
             User user = optionalUser.get();
@@ -85,8 +89,8 @@ public class UserServiceImpl implements UserService {
             List<UserActionDTO> actionDTOList = response.block();
             userDetailsDTO.setUserActionDTOList(actionDTOList);
             return userDetailsDTO;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Get user details: " + e);
             return null;
         }
     }
