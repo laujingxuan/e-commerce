@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -82,6 +83,9 @@ public class UserServiceImpl implements UserService {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
+                    .onStatus(status -> status.isError(), clientResponse -> {
+                        throw new HttpClientErrorException(clientResponse.statusCode());
+                    })
                     // there are other options like .bodyToMono as well
                     .bodyToFlux(UserActionDTO.class)
                     .collectList();
@@ -96,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isUserUuidValid(String pathUuid, String userUuid, String authority, String jwtToken) {
+    public boolean isUserUuidValid(String pathUuid, String userUuid, String authority) {
         try {
             if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)) {
                 throw new IllegalAccessException("User is unauthorized");

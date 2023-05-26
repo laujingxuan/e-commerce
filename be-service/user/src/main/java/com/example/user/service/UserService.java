@@ -11,5 +11,5 @@ public interface UserService {
 
     UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken);
 
-    boolean isUserUuidValid(String pathUuid, String userUuid, String authority, String jwtToken);
+    boolean isUserUuidValid(String pathUuid, String userUuid, String authority);
 }

@@ -7,9 +7,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,6 +28,13 @@ public class JwtTokenService {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    private WebClient webClient;
+
+    @Autowired
+    public JwtTokenService(WebClient webClient) {
+        this.webClient = webClient;
+    }
 
     public String generateToken(UserDetails userDetails, String userUuid) {
         Map<String, Object> claims = new HashMap<>();
@@ -52,11 +62,26 @@ public class JwtTokenService {
             String authority = extractAuthority(token);
             // IllegalArgumentException will be thrown when value not existed in enum
             Role.valueOf(authority);
-            return !isTokenExpired(token);
+            String userUuid = extractUserUuid(token);
+            return isUserValid(userUuid, token) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
+    }
 
+    public boolean isUserValid(String userUuid, String token) {
+        // retrieve the response without consuming the response body
+        // If the response is empty (no response), we set the default value to false using the defaultIfEmpty operator
+        return Boolean.TRUE.equals(webClient.get()
+                .uri("http://localhost:8081/users/validity/" + userUuid)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                // retrieve the response without consuming the response body
+                .toBodilessEntity()
+                .map(responseEntity -> responseEntity.getStatusCode().is2xxSuccessful())
+                // If the response is empty (no response), we set the default value to false using the defaultIfEmpty operator
+                .defaultIfEmpty(false)
+                .block());
     }
 
     public String extractUserUuid(String token) {
@@ -82,9 +107,9 @@ public class JwtTokenService {
         return claimsResolver.apply(claims);
     }
 
-    public String extractJwtTokenFromRequest(HttpServletRequest request){
+    public String extractJwtTokenFromRequest(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
             // Token will be passed in as "Bearer xxxxxxx", hence it will start with 7th index
             return authorizationHeader.substring(7);
         }

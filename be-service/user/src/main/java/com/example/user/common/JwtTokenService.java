@@ -1,6 +1,7 @@
 package com.example.user.common;
 
 import com.example.user.common.enums.Role;
+import com.example.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +10,8 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -30,9 +33,12 @@ public class JwtTokenService {
 
     private WebClient webClient;
 
+    private UserService userService;
+
     @Autowired
-    public JwtTokenService(WebClient webClient){
+    public JwtTokenService(WebClient webClient, UserService userService) {
         this.webClient = webClient;
+        this.userService = userService;
     }
 
     public String generateToken(UserDetails userDetails, String userUuid) {
@@ -61,16 +67,26 @@ public class JwtTokenService {
             String authority = extractAuthority(token);
             // IllegalArgumentException will be thrown when value not existed in enum
             Role.valueOf(authority);
-            return !isTokenExpired(token);
+            String userUuid = extractUserUuid(token);
+            return userService.isUserUuidValid(userUuid, userUuid, authority) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
-    public boolean isUserValid(){
-//        webClient.post()
-
-        return false;
+    public boolean isUserValid(String userUuid, String token) {
+        // retrieve the response without consuming the response body
+        // If the response is empty (no response), we set the default value to false using the defaultIfEmpty operator
+        return Boolean.TRUE.equals(webClient.get()
+                .uri("http://localhost:8081/users/validity/" + userUuid)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                // retrieve the response without consuming the response body
+                .toBodilessEntity()
+                .map(responseEntity -> responseEntity.getStatusCode().is2xxSuccessful())
+                // If the response is empty (no response), we set the default value to false using the defaultIfEmpty operator
+                .defaultIfEmpty(false)
+                .block());
     }
 
     public String extractUserUuid(String token) {
@@ -96,9 +112,9 @@ public class JwtTokenService {
         return claimsResolver.apply(claims);
     }
 
-    public String extractJwtTokenFromRequest(HttpServletRequest request){
+    public String extractJwtTokenFromRequest(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
             // Token will be passed in as "Bearer xxxxxxx", hence it will start with 7th index
             return authorizationHeader.substring(7);
         }
