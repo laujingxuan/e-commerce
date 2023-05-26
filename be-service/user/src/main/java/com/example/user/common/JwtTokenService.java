@@ -7,9 +7,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,6 +27,13 @@ public class JwtTokenService {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    private WebClient webClient;
+
+    @Autowired
+    public JwtTokenService(WebClient webClient){
+        this.webClient = webClient;
+    }
 
     public String generateToken(UserDetails userDetails, String userUuid) {
         Map<String, Object> claims = new HashMap<>();
@@ -56,6 +65,12 @@ public class JwtTokenService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isUserValid(){
+//        webClient.post()
+
+        return false;
     }
 
     public String extractUserUuid(String token) {

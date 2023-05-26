@@ -94,4 +94,22 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
+
+    @Override
+    public boolean isUserUuidValid(String pathUuid, String userUuid, String authority, String jwtToken) {
+        try {
+            if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)) {
+                throw new IllegalAccessException("User is unauthorized");
+            }
+            Optional<User> optionalUser = userRepository.findById(pathUuid);
+            if (optionalUser.isPresent()) {
+                return true;
+            }
+        } catch (IllegalAccessException e) {
+            logger.warn("Authorization failed: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error for isUserUuidValid", e);
+        }
+        return false;
+    }
 }
