@@ -1,8 +1,8 @@
 package com.example.action.controller;
 
 import com.example.action.DTO.UserActionDTO;
-import com.example.action.common.JwtTokenService;
 import com.example.action.service.ActionService;
+import com.example.shared.utils.JwtTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

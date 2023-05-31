@@ -21,6 +21,12 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.example</groupId>
+			<artifactId>shared</artifactId>
+			<!--			Since the ${project.version} placeholder is used, it will be replaced with the actual version of the current project specified in the <version> tag of the <project> section-->
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>2.4.4</version>

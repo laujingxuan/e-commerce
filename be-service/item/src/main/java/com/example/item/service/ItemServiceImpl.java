@@ -1,14 +1,14 @@
 package com.example.item.service;
 
 import com.example.item.DTO.ItemDTO;
-import com.example.item.common.enums.ActionOnItem;
 import com.example.item.kafka.ActionKafkaUtils;
 import com.example.item.modelMapper.ItemMapper;
-import com.example.item.common.enums.Role;
 import com.example.item.dao.ItemRepository;
 import com.example.item.dao.ItemTypeRepository;
 import com.example.item.entity.Item;
 import com.example.item.entity.ItemType;
+import com.example.shared.enums.ActionOnItem;
+import com.example.shared.enums.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

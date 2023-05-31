@@ -1,6 +1,7 @@
-package com.example.item.common.enums;
+package com.example.shared.enums;
 
 public enum Role {
     ROLE_USER,
     ROLE_ADMIN
 }
+

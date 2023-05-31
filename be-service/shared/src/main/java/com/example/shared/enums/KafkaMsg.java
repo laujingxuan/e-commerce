@@ -1,4 +1,4 @@
-package com.example.shared.common;
+package com.example.shared.enums;
 
 public class KafkaMsg {
     private ActionOnItem actionOnItem;

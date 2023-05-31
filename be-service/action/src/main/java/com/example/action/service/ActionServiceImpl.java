@@ -1,14 +1,13 @@
 package com.example.action.service;
 
 import com.example.action.DTO.UserActionDTO;
-import com.example.action.common.enums.Role;
 import com.example.action.dao.UserActionRepository;
 import com.example.action.entity.UserAction;
 import com.example.action.modelMapper.UserActionMapper;
+import com.example.shared.enums.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

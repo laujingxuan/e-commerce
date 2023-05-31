@@ -1,8 +1,8 @@
 package com.example.item.controller;
 
 import com.example.item.DTO.ItemDTO;
-import com.example.item.common.JwtTokenService;
 import com.example.item.service.ItemService;
+import com.example.shared.utils.JwtTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

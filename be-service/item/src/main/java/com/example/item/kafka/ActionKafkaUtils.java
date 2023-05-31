@@ -1,6 +1,6 @@
 package com.example.item.kafka;
 
-import com.example.item.common.enums.ActionOnItem;
+import com.example.shared.enums.ActionOnItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
