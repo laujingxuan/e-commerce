@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(scanBasePackages = "com.example")
-@ComponentScan("com.example.shared")
+@ComponentScan({"com.example.shared", "com.example.action"})
 public class ActionApplication {
 
 	public static void main(String[] args) {

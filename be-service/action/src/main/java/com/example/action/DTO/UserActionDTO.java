@@ -1,6 +1,6 @@
 package com.example.action.DTO;
 
-import com.example.action.common.enums.ActionOnItem;
+import com.example.shared.enums.ActionOnItem;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

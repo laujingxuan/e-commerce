@@ -1,6 +1,6 @@
 package com.example.action.entity;
 
-import com.example.action.common.enums.ActionOnItem;
+import com.example.shared.enums.ActionOnItem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name="user-action")
+@Table(name = "user-action")
 public class UserAction {
 
     @Id
@@ -17,20 +17,20 @@ public class UserAction {
     private int id;
 
     @NotEmpty
-    @Column(name="user_uuid")
+    @Column(name = "user_uuid")
     private String userUuid;
 
 
-    @Min(value=1, message="itemId cannot be empty")
-    @Column(name="item_id")
+    @Min(value = 1, message = "itemId cannot be empty")
+    @Column(name = "item_id")
     private int itemId;
 
     @NotNull
-    @Column(name="action_on_item")
+    @Column(name = "action_on_item")
     private ActionOnItem actionOnItem;
 
     @NotNull
-    @Column(name="action_time")
+    @Column(name = "action_time")
     private Timestamp actionTime;
 
     public UserAction() {

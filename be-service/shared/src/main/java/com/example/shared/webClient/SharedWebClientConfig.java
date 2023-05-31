@@ -15,9 +15,9 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class WebClientConfig {
+public class SharedWebClientConfig {
     @Bean
-    public WebClient webClient(){
+    public WebClient sharedWebClient(){
         // Configuring timeout behaviour (Optional)
         // set the connection timeout via the ChannelOption.CONNECT_TIMEOUT_MILLIS option
         // set the read and write timeouts using a ReadTimeoutHandler and a WriteTimeoutHandler, respectively

@@ -1,8 +1,8 @@
 package com.example.action.kafka.listener;
 
 import com.example.action.DTO.UserActionDTO;
-import com.example.action.common.enums.ActionOnItem;
 import com.example.action.service.ActionService;
+import com.example.shared.enums.ActionOnItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

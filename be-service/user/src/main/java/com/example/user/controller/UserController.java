@@ -1,7 +1,7 @@
 package com.example.user.controller;
 
 import com.example.user.DTO.UserDetailsDTO;
-import com.example.user.common.JwtTokenService;
+import com.example.user.common.UserJwtTokenService;
 import com.example.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private UserService userService;
 
-    private JwtTokenService jwtTokenService;
+    private UserJwtTokenService userJwtTokenService;
 
     @Autowired
-    public UserController(UserService userService, JwtTokenService jwtTokenService) {
+    public UserController(UserService userService, UserJwtTokenService userJwtTokenService) {
         this.userService = userService;
-        this.jwtTokenService = jwtTokenService;
+        this.userJwtTokenService = userJwtTokenService;
     }
 
     @GetMapping("/{pathUuid}")
     public ResponseEntity<?> getUserDetails(@PathVariable String pathUuid, HttpServletRequest httpServletRequest) {
-        String jwtToken = jwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
-        if (!jwtTokenService.validateToken(jwtToken)) {
+        String jwtToken = userJwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
+        if (!userJwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String userUuid = jwtTokenService.extractUserUuid(jwtToken);
-        String authority = jwtTokenService.extractAuthority(jwtToken);
+        String userUuid = userJwtTokenService.extractUserUuid(jwtToken);
+        String authority = userJwtTokenService.extractAuthority(jwtToken);
 
         UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken);
         if (userDetailsDTO != null) {
@@ -43,12 +43,12 @@ public class UserController {
 
     @GetMapping("/validity/{pathUuid}")
     public ResponseEntity<?> isUserUuidValid(@PathVariable String pathUuid, HttpServletRequest httpServletRequest) {
-        String jwtToken = jwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
-        if (!jwtTokenService.validateToken(jwtToken)) {
+        String jwtToken = userJwtTokenService.extractJwtTokenFromRequest(httpServletRequest);
+        if (!userJwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String userUuid = jwtTokenService.extractUserUuid(jwtToken);
-        String authority = jwtTokenService.extractAuthority(jwtToken);
+        String userUuid = userJwtTokenService.extractUserUuid(jwtToken);
+        String authority = userJwtTokenService.extractAuthority(jwtToken);
 
         if (!userService.isUserUuidValid(pathUuid, userUuid, authority)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

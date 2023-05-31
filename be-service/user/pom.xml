@@ -22,6 +22,12 @@
             <version>2.4.4</version>
         </dependency>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>shared</artifactId>
+            <!--			Since the ${project.version} placeholder is used, it will be replaced with the actual version of the current project specified in the <version> tag of the <project> section-->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>

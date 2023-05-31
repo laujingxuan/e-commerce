@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.example.shared")
+@ComponentScan({"com.example.shared", "com.example.item"})
 public class ItemApplication {
 
 	public static void main(String[] args) {

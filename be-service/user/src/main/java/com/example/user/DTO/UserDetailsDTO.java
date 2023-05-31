@@ -1,8 +1,7 @@
 package com.example.user.DTO;
 
-import com.example.user.common.enums.Role;
+import com.example.shared.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

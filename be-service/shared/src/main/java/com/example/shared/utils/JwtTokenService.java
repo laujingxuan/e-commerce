@@ -29,11 +29,11 @@ public class JwtTokenService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    private WebClient webClient;
+    private WebClient sharedWebClient;
 
     @Autowired
-    public JwtTokenService(WebClient webClient) {
-        this.webClient = webClient;
+    public JwtTokenService(WebClient sharedWebClient) {
+        this.sharedWebClient = sharedWebClient;
     }
 
     public String generateToken(UserDetails userDetails, String userUuid) {
@@ -72,7 +72,7 @@ public class JwtTokenService {
     public boolean isUserValid(String userUuid, String token) {
         // retrieve the response without consuming the response body
         // If the response is empty (no response), we set the default value to false using the defaultIfEmpty operator
-        return Boolean.TRUE.equals(webClient.get()
+        return Boolean.TRUE.equals(sharedWebClient.get()
                 .uri("http://localhost:8081/users/validity/" + userUuid)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
@@ -120,7 +120,7 @@ public class JwtTokenService {
         return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 }

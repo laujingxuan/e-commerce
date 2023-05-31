@@ -1,8 +1,8 @@
 package com.example.user.service;
 
+import com.example.shared.enums.Role;
 import com.example.user.DTO.UserActionDTO;
 import com.example.user.DTO.UserDetailsDTO;
-import com.example.user.common.enums.Role;
 import com.example.user.dao.UserRepository;
 import com.example.user.entity.User;
 import com.example.user.modelMapper.UserMapper;

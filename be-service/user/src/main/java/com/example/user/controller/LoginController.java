@@ -4,7 +4,7 @@ import com.example.user.entity.User;
 import com.example.user.request.LoginRequest;
 import com.example.user.response.AuthenticationResponse;
 import com.example.user.service.UserService;
-import com.example.user.common.JwtTokenService;
+import com.example.user.common.UserJwtTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +25,13 @@ public class LoginController {
 
     private UserService userService;
 
-    private JwtTokenService jwtTokenService;
+    private UserJwtTokenService userJwtTokenService;
 
     @Autowired
-    public LoginController(AuthenticationManager authenticationManager, UserService userService, JwtTokenService jwtTokenService){
+    public LoginController(AuthenticationManager authenticationManager, UserService userService, UserJwtTokenService userJwtTokenService){
         this.authenticationManager = authenticationManager;
         this.userService = userService;
-        this.jwtTokenService = jwtTokenService;
+        this.userJwtTokenService = userJwtTokenService;
     }
 
     //The <?> notation used in the ResponseEntity<?> declaration represents a wildcard type or an unknown type. It is used when the specific type of the response body is not known or when the response does not contain any body.
@@ -53,7 +53,7 @@ public class LoginController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             User user = userService.loadUserByUsername(loginRequest.getUsername());
-            String token = jwtTokenService.generateToken(user, user.getId());
+            String token = userJwtTokenService.generateToken(user, user.getId());
 
             return ResponseEntity.ok().body(new AuthenticationResponse(token));
         } catch (AuthenticationException e){
