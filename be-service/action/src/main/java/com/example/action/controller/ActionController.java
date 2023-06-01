@@ -31,7 +31,7 @@ public class ActionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createUserAction(HttpServletRequest httpServletRequest, @Valid @RequestBody UserActionDTO userActionDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> createUserAction(HttpServletRequest httpServletRequest, @Valid @RequestBody UserActionDTO userActionDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.warn("Error during create user action binding: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
@@ -43,10 +43,7 @@ public class ActionController {
         }
 
         UserActionDTO createdUserAction = actionService.create(userActionDTO);
-        if (createdUserAction == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUserAction);
     }
 
     @GetMapping("/list/{pathUuid}")
@@ -59,9 +56,6 @@ public class ActionController {
         String authority = jwtTokenService.extractAuthority(jwtToken);
 
         List<UserActionDTO> userActionList = actionService.getUserActionList(pathUuid, userUuid, authority);
-        if (userActionList == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         return ResponseEntity.ok().body(userActionList);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.item.exception;
+package com.example.shared.exception;
 
 public class CustomUnauthorizedException extends RuntimeException{
     public CustomUnauthorizedException(String message) {
