@@ -25,56 +25,50 @@ public class ItemController {
     private ItemService itemService;
 
     @Autowired
-    public ItemController(ItemService itemService, JwtTokenService jwtTokenService){
+    public ItemController(ItemService itemService, JwtTokenService jwtTokenService) {
         this.jwtTokenService = jwtTokenService;
         this.itemService = itemService;
     }
 
     @GetMapping("/items")
-    public ResponseEntity<List<ItemDTO>> getAllItems(){
+    public ResponseEntity<List<ItemDTO>> getAllItems() {
         List<ItemDTO> itemDTOS = itemService.findAll();
         return ResponseEntity.ok().body(itemDTOS);
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<?> getItem(@PathVariable int id){
+    public ResponseEntity<?> getItem(@PathVariable int id) {
         ItemDTO itemDTO = itemService.findById(id);
-        if (itemDTO != null){
-            return ResponseEntity.ok().body(itemDTO);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().body(itemDTO);
     }
 
     @PostMapping("/items")
-    public ResponseEntity<Void> createItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+    public ResponseEntity<?> createItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             logger.warn("Failed binding result: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
 
         String jwtToken = jwtTokenService.extractJwtTokenFromRequest(request);
-        if (!jwtTokenService.validateToken(jwtToken)){
+        if (!jwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         // update the userDTO with the user uuid
         itemDTO.setUserUuid(jwtTokenService.extractUserUuid(jwtToken));
         ItemDTO createdItem = itemService.create(itemDTO);
-        if (createdItem != null){
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
     }
 
     @PutMapping("/items")
-    public ResponseEntity<Void> updateItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+    public ResponseEntity<?> updateItem(HttpServletRequest request, @Valid @RequestBody ItemDTO itemDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             logger.warn("Failed binding result: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
 
         String jwtToken = jwtTokenService.extractJwtTokenFromRequest(request);
-        if (!jwtTokenService.validateToken(jwtToken)){
+        if (!jwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -83,24 +77,18 @@ public class ItemController {
         String authority = jwtTokenService.extractAuthority(jwtToken);
 
         ItemDTO updatedItem = itemService.update(authority, itemDTO);
-        if (updatedItem != null){
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().body(updatedItem);
     }
 
     @DeleteMapping("/items/{id}")
-    public ResponseEntity<Void> deleteItem(HttpServletRequest request, @PathVariable int id){
+    public ResponseEntity<Void> deleteItem(HttpServletRequest request, @PathVariable int id) {
         String jwtToken = jwtTokenService.extractJwtTokenFromRequest(request);
-        if (!jwtTokenService.validateToken(jwtToken)){
+        if (!jwtTokenService.validateToken(jwtToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String authority = jwtTokenService.extractAuthority(jwtToken);
         String userUuid = jwtTokenService.extractUserUuid(jwtToken);
-        boolean isDeleted = itemService.deleteById(authority, userUuid, id);
-        if (isDeleted){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().build();
+        itemService.deleteById(authority, userUuid, id);
+        return ResponseEntity.noContent().build();
     }
 }
