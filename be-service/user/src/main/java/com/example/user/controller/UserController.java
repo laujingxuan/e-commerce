@@ -35,10 +35,7 @@ public class UserController {
         String authority = userJwtTokenService.extractAuthority(jwtToken);
 
         UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken);
-        if (userDetailsDTO != null) {
-            return ResponseEntity.ok().body(userDetailsDTO);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.ok().body(userDetailsDTO);
     }
 
     @GetMapping("/validity/{pathUuid}")
