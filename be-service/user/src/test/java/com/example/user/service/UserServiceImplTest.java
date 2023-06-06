@@ -126,15 +126,15 @@ public class UserServiceImplTest {
                 .setBody(objectMapper.writeValueAsString(mockList))
                 .addHeader("Content-Type", "application/json"));
 
-
         // Invoke the method under test
         String baseUrl = String.format("http://localhost:%s", mockBackEnd.getPort());
         UserDetailsDTO result = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken, baseUrl);
+
         // Verify the expected behavior
         assertNotNull(result);
         assertEquals(userDetailsDTO, result);
 
-        // Verify the request received during the test case
+        // Verify the HTTP request by mockWebServer received during the test case
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
         assertEquals("/actions/list/" + userUuid, recordedRequest.getPath());
