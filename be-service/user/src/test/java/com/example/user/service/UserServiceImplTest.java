@@ -33,10 +33,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// @ExtendWith is JUnit 5 annotation
+// @ExtendWith is a JUnit 5 annotation used to register one or more extensions that customize the behavior of the test execution. It allows you to extend the capabilities of JUnit by adding additional features or integrating with other frameworks.
+// SpringExtension.class is the extension provided by the Spring framework, specifically the Spring TestContext Framework. It integrates the Spring testing features with JUnit 5, allowing you to use annotations such as @Autowired, @MockBean, and @TestPropertySource, and enabling the creation and injection of Spring components within your test classes.
+// MockitoExtension.class is the extension provided by the Mockito framework. It integrates Mockito with JUnit 5, enabling the usage of Mockito's mocking and verification capabilities in your tests. With MockitoExtension, you can use annotations such as @Mock, @Spy, and @InjectMocks to create and configure mock objects.
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
-//// The properties attribute takes an array of key-value pairs, where the key is the property name and the value is the new value you want to set.
-//@TestPropertySource(properties = {"action.baseurl=newValue"})
 public class UserServiceImplTest {
 
     @Mock
