@@ -9,7 +9,7 @@ public interface UserService {
 
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken);
+    UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken, String baseUrl);
 
     boolean isUserUuidValid(String pathUuid, String userUuid, String authority);
 }

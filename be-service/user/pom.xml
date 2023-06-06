@@ -22,6 +22,18 @@
             <version>2.4.4</version>
         </dependency>
         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.example</groupId>
             <artifactId>shared</artifactId>
             <!--			Since the ${project.version} placeholder is used, it will be replaced with the actual version of the current project specified in the <version> tag of the <project> section-->

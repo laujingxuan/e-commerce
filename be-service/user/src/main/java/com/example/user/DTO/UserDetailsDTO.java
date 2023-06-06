@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,6 +28,14 @@ public class UserDetailsDTO {
     List<UserActionDTO> userActionDTOList;
 
     public UserDetailsDTO() {
+    }
+
+    public UserDetailsDTO(String id, String username, String email, Role role) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.role = role;
+        this.userActionDTOList = new ArrayList<>();
     }
 
     public String getId() {
@@ -67,5 +76,16 @@ public class UserDetailsDTO {
 
     public void setUserActionDTOList(List<UserActionDTO> userActionDTOList) {
         this.userActionDTOList = userActionDTOList;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDetailsDTO{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", userActionDTOList=" + userActionDTOList +
+                '}';
     }
 }

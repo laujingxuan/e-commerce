@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken) {
+    public UserDetailsDTO getUserDetails(String pathUuid, String userUuid, String authority, String jwtToken, String baseUrl) {
         if (Role.valueOf(authority) != Role.ROLE_ADMIN && !pathUuid.equals(userUuid)) {
             throw new CustomUnauthorizedException("User is unauthorized");
         }
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.get();
         UserDetailsDTO userDetailsDTO = userMapper.mapToDTO(user);
         Mono<List<UserActionDTO>> response = webClient.get()
-                .uri("http://localhost:8082/actions/list/" + pathUuid)
+                .uri(baseUrl + "/actions/list/" + pathUuid)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()

@@ -5,6 +5,7 @@ import com.example.user.common.UserJwtTokenService;
 import com.example.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,9 @@ public class UserController {
     private UserService userService;
 
     private UserJwtTokenService userJwtTokenService;
+
+    @Value("${action.baseurl}")
+    private String baseUrl;
 
     @Autowired
     public UserController(UserService userService, UserJwtTokenService userJwtTokenService) {
@@ -34,7 +38,7 @@ public class UserController {
         String userUuid = userJwtTokenService.extractUserUuid(jwtToken);
         String authority = userJwtTokenService.extractAuthority(jwtToken);
 
-        UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken);
+        UserDetailsDTO userDetailsDTO = userService.getUserDetails(pathUuid, userUuid, authority, jwtToken, baseUrl);
         return ResponseEntity.ok().body(userDetailsDTO);
     }
 
