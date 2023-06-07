@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,13 +39,18 @@ import static org.mockito.Mockito.when;
 // SpringExtension.class is the extension provided by the Spring framework, specifically the Spring TestContext Framework. It integrates the Spring testing features with JUnit 5, allowing you to use annotations such as @Autowired, @MockBean, and @TestPropertySource, and enabling the creation and injection of Spring components within your test classes.
 // MockitoExtension.class is the extension provided by the Mockito framework. It integrates Mockito with JUnit 5, enabling the usage of Mockito's mocking and verification capabilities in your tests. With MockitoExtension, you can use annotations such as @Mock, @Spy, and @InjectMocks to create and configure mock objects.
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
+// @SpringBootTest searches for a main configuration class in your project, typically annotated with @SpringBootApplication or @Configuration.
+// @SpringBootTest starts the Spring application context, which initializes all the beans and dependencies defined in your application.
+// @SpringBootTest sets up the necessary infrastructure to run your tests, including dependency injection and auto-configuration.
+// If we need to autowired certain bean (not mocking) in our test case, we need to have this @SpringBootTest
+@SpringBootTest
 public class UserServiceImplTest {
-
-    @Mock
-    private UserRepository userRepository;
 
     // When you annotate a field or parameter with @Mock, Mockito creates a mock object of the specified type and injects it into the test class or method. The mock object can then be used to define the behavior you want to simulate during the test.
     @Mock
+    private UserRepository userRepository;
+
+    @Autowired
     private UserMapper userMapper;
 
     // When using @InjectMocks, you should use the implementation class, not the interface.
@@ -101,7 +108,6 @@ public class UserServiceImplTest {
 
     @Test
     void testGetUserDetails_ValidInput_ReturnsUserDetailsDTO() throws JsonProcessingException, InterruptedException {
-        // Mock UserRepository behavior
         String userUuid = "123";
         String pathUuid = "123";
         String authority = "ROLE_USER";
@@ -111,11 +117,9 @@ public class UserServiceImplTest {
         String email = "email";
         User testUser = new User(username, password, email, Role.valueOf(authority));
         testUser.setId(userUuid);
-        when(userRepository.findById(userUuid)).thenReturn(Optional.of(testUser));
 
-        // Mock UserMapper behavior
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(userUuid, username, email, Role.valueOf(authority));
-        when(userMapper.mapToDTO(testUser)).thenReturn(userDetailsDTO);
+        // Mock UserRepository behavior
+        when(userRepository.findById(userUuid)).thenReturn(Optional.of(testUser));
 
         // Mock WebClient behavior
         UserActionDTO mockUserAction = new UserActionDTO("test", 1, "CREATE_ITEM", Timestamp.valueOf(LocalDateTime.now()));
@@ -132,7 +136,12 @@ public class UserServiceImplTest {
 
         // Verify the expected behavior
         assertNotNull(result);
-        assertEquals(userDetailsDTO, result);
+        assertEquals(testUser.getUsername(), result.getUsername());
+        assertEquals(mockList.size(), result.getUserActionDTOList().size());
+        for (int i = 0; i < mockList.size(); i ++){
+            assertEquals(mockList.get(i).getId(), result.getUserActionDTOList().get(i).getId());
+            assertNotNull(result.getUserActionDTOList().get(i).getActionTime());
+        }
 
         // Verify the HTTP request by mockWebServer received during the test case
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
@@ -141,6 +150,5 @@ public class UserServiceImplTest {
 
         // Verify the interactions with mock objects
         verify(userRepository).findById(userUuid);
-        verify(userMapper).mapToDTO(testUser);
     }
 }
